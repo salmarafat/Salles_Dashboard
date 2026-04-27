@@ -140,11 +140,12 @@ with tab2:
 # ======================
 # 👤 CUSTOMERS
 # ======================
+# ======================
+# 👤 CUSTOMERS
+# ======================
 with tab3:
 
-    # ======================
-    # 👤 RFM CALCULATION
-    # ======================
+    # RFM CALCULATION
     rfm = df.groupby('CustomerID').agg({
         'InvoiceDate': lambda x: (df['InvoiceDate'].max() - x.max()).days,
         'InvoiceNo': 'nunique',
@@ -153,18 +154,13 @@ with tab3:
 
     rfm.columns = ['Recency', 'Frequency', 'Monetary']
 
-    # ======================
-    # 👑 SEGMENTATION (IMPORTANT)
-    # ======================
+    # SEGMENTATION
     rfm['Type'] = 'Normal'
     rfm.loc[rfm['Monetary'] > rfm['Monetary'].quantile(0.8), 'Type'] = 'Churn Risk'
     rfm.loc[rfm['Recency'] > 200, 'Type'] = 'High Spender'
 
-    # ======================
-    # 📊 RFM SCATTER
-    # ======================
+    # RFM SCATTER
     st.subheader("📊 Customer Behavior (RFM)")
-
     fig = px.scatter(
         rfm,
         x='Frequency',
@@ -173,46 +169,20 @@ with tab3:
         color='Type',
         title="Customer Segments"
     )
-
     st.plotly_chart(fig, use_container_width=True)
 
-    # ======================
-    # 👑 TOP VIP CUSTOMERS
-    # ======================
+    # TOP VIP CUSTOMERS
     st.subheader("👑 Top 11 VIP Customers")
-
     top_vip = rfm.sort_values('Monetary', ascending=False).head(11).reset_index()
-
-    fig = px.bar(
-        top_vip,
-        x='CustomerID',
-        y='Monetary',
-        color='Monetary',
-        color_continuous_scale='Blues'
-    )
-
+    fig = px.bar(top_vip, x='CustomerID', y='Monetary', color='Monetary', color_continuous_scale='Blues')
     st.plotly_chart(fig, use_container_width=True)
 
-    # ======================
-    # 📊 SEGMENT BREAKDOWN
-    # ======================
+    # SEGMENT BREAKDOWN
     st.subheader("📊 Customer Segments Breakdown")
-
     seg_counts = rfm['Type'].value_counts().reset_index()
     seg_counts.columns = ['Type', 'Count']
-
-    fig = px.bar(
-        seg_counts,
-        x='Type',
-        y='Count',
-        color='Type',
-        text='Count'
-    )
-
+    fig = px.bar(seg_counts, x='Type', y='Count', color='Type', text='Count')
     st.plotly_chart(fig, use_container_width=True)
-# ======================
-# 🌍 MAP
-# ======================
 with tab4:
 
     country_sales = df.groupby('Country')['TotalPrice'].sum().reset_index()
