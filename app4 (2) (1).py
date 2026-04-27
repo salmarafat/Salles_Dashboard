@@ -24,8 +24,8 @@ h1,h2,h3 {color:#00C2FF;}
 # ======================
 @st.cache_data
 def load_data():
-    df1 = pd.read_csv(r"C:\Users\Rana\data_part1.csv")
-    df2 = pd.read_csv(r"C:\Users\Rana\data_part2.csv")
+    df1 = pd.read_csv(r"data_part1.csv")
+    df2 = pd.read_csv(r"data_part2.csv")
 
     df = pd.concat([df1, df2], ignore_index=True)
     df["InvoiceDate"] = pd.to_datetime(df["InvoiceDate"])
