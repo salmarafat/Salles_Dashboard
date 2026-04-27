@@ -157,8 +157,14 @@ with tab3:
     # 👑 SEGMENTATION (IMPORTANT)
     # ======================
     rfm['Type'] = 'Normal'
-    rfm.loc[rfm['Monetary'] > rfm['Monetary'].quantile(0.8), 'Type'] = 'High Spender'
+
     rfm.loc[rfm['Recency'] > 200, 'Type'] = 'Churn Risk'
+
+    rfm.loc[
+    (rfm['Monetary'] > rfm['Monetary'].quantile(0.8)) &
+    (rfm['Recency'] <= 200),
+    'Type'
+    ] = 'High Spender'
 
     # ======================
     # 📊 RFM SCATTER
