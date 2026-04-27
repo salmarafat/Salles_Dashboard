@@ -154,56 +154,45 @@ with tab3:
     rfm.columns = ['Recency', 'Frequency', 'Monetary']
 
     # ======================
-    # 👑 SEGMENTATION (IMPORTANT)
+    # 👑 SEGMENTATION
     # ======================
     rfm['Type'] = 'Normal'
 
-# ======================
-# 1️⃣ VIP / High Value Customers (highest priority after churn)
-# ======================
-   rfm.loc[
-    (rfm['Monetary'] > rfm['Monetary'].quantile(0.95)) &
-    (rfm['Frequency'] > rfm['Frequency'].quantile(0.90)) &
-    (rfm['Recency'] <= rfm['Recency'].quantile(0.5)),
-    'Type'
-] = 'VIP Customer'
-
-
-# ======================
-# 2️⃣ Churn Risk (inactive customers)
-# ======================
+    # VIP
     rfm.loc[
-    rfm['Recency'] > rfm['Recency'].quantile(0.8),
-    'Type'
-] = 'Churn Risk'
+        (rfm['Monetary'] > rfm['Monetary'].quantile(0.95)) &
+        (rfm['Frequency'] > rfm['Frequency'].quantile(0.90)) &
+        (rfm['Recency'] <= rfm['Recency'].quantile(0.5)),
+        'Type'
+    ] = 'VIP Customer'
 
-
-# ======================
-# 3️⃣ Loyal Customers (active + frequent buyers)
-# ======================
+    # Churn
     rfm.loc[
-    (rfm['Recency'] <= rfm['Recency'].quantile(0.5)) &
-    (rfm['Frequency'] > rfm['Frequency'].quantile(0.7)) &
-    (rfm['Monetary'] > rfm['Monetary'].quantile(0.5)),
-    'Type'
-] = 'Loyal Customer'
+        rfm['Recency'] > rfm['Recency'].quantile(0.8),
+        'Type'
+    ] = 'Churn Risk'
 
-
-# ======================
-# 4️⃣ High Spenders (active but not frequent)
-# ======================
+    # Loyal
     rfm.loc[
-    (rfm['Monetary'] > rfm['Monetary'].quantile(0.85)) &
-    (rfm['Recency'] <= rfm['Recency'].quantile(0.6)),
-    'Type'
-] = 'High Spender'
+        (rfm['Recency'] <= rfm['Recency'].quantile(0.5)) &
+        (rfm['Frequency'] > rfm['Frequency'].quantile(0.7)) &
+        (rfm['Monetary'] > rfm['Monetary'].quantile(0.5)),
+        'Type'
+    ] = 'Loyal Customer'
+
+    # High Spender
+    rfm.loc[
+        (rfm['Monetary'] > rfm['Monetary'].quantile(0.85)) &
+        (rfm['Recency'] <= rfm['Recency'].quantile(0.6)),
+        'Type'
+    ] = 'High Spender'
 
     # ======================
     # 📊 RFM SCATTER
     # ======================
     st.subheader("📊 Customer Behavior (RFM)")
 
-        fig = px.scatter(
+    fig = px.scatter(
         rfm,
         x='Frequency',
         y='Monetary',
@@ -217,7 +206,7 @@ with tab3:
     # ======================
     # 👑 TOP VIP CUSTOMERS
     # ======================
-    st.subheader("👑 Top 10 VIP Customers")
+    st.subheader("👑 Top 10 Customers")
 
     top_vip = rfm.sort_values('Monetary', ascending=False).head(10).reset_index()
 
@@ -232,7 +221,7 @@ with tab3:
     st.plotly_chart(fig, use_container_width=True)
 
     # ======================
-    # 📊 SEGMENT BREAKDOWN
+    # 📊 SEGMENTS
     # ======================
     st.subheader("📊 Customer Segments Breakdown")
 
